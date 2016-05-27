@@ -1,0 +1,80 @@
+--- Makefile	2011-01-28 17:38:56.000000000 +0100
++++ MakefileArchLinux	2016-05-27 17:19:26.567774100 +0200
+@@ -275,7 +275,7 @@
+ install-data: main install-data-local
+ 	@($(call READ_CONFIG, prefix); \
+ 	$(call READ_META, name); \
+-	directory=$$prefix/share/$$name; \
++	directory=$$prefixInstall/share/$$name; \
+ 	shopt -s nullglob; \
+ 	if [ -e share ]; then \
+ 	  dataifany=`ls -d share/*`; \
+@@ -347,8 +347,8 @@
+ uninstall-data: uninstall-data-local
+ 	@( ($(call READ_CONFIG, prefix); \
+ 	$(call READ_META, name); \
+-	directory=$$prefix/share/$$name; \
+-	echo "Removing $$name data from $$prefix/share/..."; \
++	directory=$$prefixInstall/share/$$name; \
++	echo "Removing $$name data from $$prefixInstall/share/..."; \
+ 	shopt -s nullglob; \
+ 	if rm -rf $$directory; then \
+ 	  echo "The entire directory $$directory was removed."; \
+@@ -386,22 +386,22 @@
+ install-programs: programs install-programs-local
+ 	@($(call READ_CONFIG, prefix); 		     \
+ 	$(call READ_META, name);   		     \
+-	echo "Creating $$prefix/bin/..."; \
+-	(mkdir -p $$prefix/bin &> /dev/null || true); \
+-	echo "Creating $$prefix/sbin/..."; \
+-	(mkdir -p $$prefix/sbin &> /dev/null || true); \
+-	echo "Installing programs from $$name into $$prefix/bin/..."; \
++	echo "Creating $$prefixInstall/bin/..."; \
++	(mkdir -p $$prefixInstall/bin &> /dev/null || true); \
++	echo "Creating $$prefixInstall/sbin/..."; \
++	(mkdir -p $$prefixInstall/sbin &> /dev/null || true); \
++	echo "Installing programs from $$name into $$prefixInstall/bin/..."; \
+ 	shopt -s nullglob; \
+ 	for file in $(OTHER_PROGRAMS_TO_INSTALL) _build/*.byte _build/*.native; do \
+ 	  basename=`basename $$file`; \
+ 	  if echo " $(ROOT_NATIVE_PROGRAMS) $(ROOT_BYTE_PROGRAMS) " | grep -q " $$basename "; then \
+-	    echo "Installing "`basename $$file`" as a \"root program\" into $$prefix/sbin..."; \
+-	    cp -a $$file $$prefix/sbin/; \
+-	    chmod +x $$prefix/sbin/$$basename; \
++	    echo "Installing "`basename $$file`" as a \"root program\" into $$prefixInstall/sbin..."; \
++	    cp -a $$file $$prefixInstall/sbin/; \
++	    chmod +x $$prefixInstall/sbin/$$basename; \
+ 	  else \
+-	    echo "Installing "`basename $$file`" into $$prefix/bin..."; \
+-	    cp -a $$file $$prefix/bin/; \
+-	    chmod +x $$prefix/bin/$$basename; \
++	    echo "Installing "`basename $$file`" into $$prefixInstall/bin..."; \
++	    cp -a $$file $$prefixInstall/bin/; \
++	    chmod +x $$prefixInstall/bin/$$basename; \
+ 	  fi; \
+ 	done) && \
+ 	echo 'Program installation was successful.'
+@@ -415,11 +415,11 @@
+ 	for file in $(OTHER_PROGRAMS_TO_INSTALL) _build/*.byte _build/*.native; do \
+ 	  basename=`basename $$file`; \
+ 	  if echo " $(ROOT_NATIVE_PROGRAMS) $(ROOT_BYTE_PROGRAMS) " | grep -q " $$basename "; then \
+-	    echo -e "Removing the \"root program\" $$basename from $$prefix/sbin..."; \
+-	    export pathname=$$prefix/sbin/`basename $$file`; \
++	    echo -e "Removing the \"root program\" $$basename from $$prefixInstall/sbin..."; \
++	    export pathname=$$prefixInstall/sbin/`basename $$file`; \
+ 	  else \
+-	    echo -e "Removing $$basename from $$prefix/bin..."; \
+-	    export pathname=$$prefix/bin/`basename $$file`; \
++	    echo -e "Removing $$basename from $$prefixInstall/bin..."; \
++	    export pathname=$$prefixInstall/bin/`basename $$file`; \
+ 	  fi; \
+ 	  rm -f $$pathname; \
+ 	done) && \
+@@ -911,6 +911,7 @@
+ 	echo -e "let name = \"$$name\";;" >> $@ && \
+ 	echo -e "let version = \"$$version\";;" >> $@ && \
+ 	echo -e "let prefix = \"$$prefix\";;" >> $@ && \
++	echo -e "let prefix = \"$$prefixInstall\";;" >> $@ && \
+ 	echo -e "let libraryprefix = \"$$libraryprefix\";;" >> $@ && \
+ 	echo -e "let configurationprefix = \"$$configurationprefix\";;" >> $@ && \
+ 	echo -e "let localeprefix = \"$$localeprefix\";;" >> $@ && \
